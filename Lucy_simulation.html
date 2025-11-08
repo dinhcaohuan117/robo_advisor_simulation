@@ -7,7 +7,7 @@
 <style>
   /* === THEME === */
   body {
-    font-family: "Segoe UI", Roboto, system-ui;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background: radial-gradient(circle at top, #0a0f1c, #020409 80%);
     color: #d1e7ff;
     margin: 0;
@@ -42,7 +42,12 @@
     padding: 20px;
     margin-bottom: 20px;
     transition: all 0.4s ease;
+    animation: cardFadeIn 0.7s ease-out forwards;
+    opacity: 0;
   }
+  
+  .card:nth-of-type(1) { animation-delay: 0.1s; }
+  .card:nth-of-type(2) { animation-delay: 0.3s; }
 
   .card:hover {
     box-shadow: 0 0 35px rgba(0, 195, 255, 0.25);
@@ -64,13 +69,20 @@
     border: 1px solid rgba(120, 180, 255, 0.25);
     border-radius: 8px;
     color: #d1e7ff;
-    transition: border-color 0.3s;
-	appearance: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   select:focus {
     border-color: #00e1ff;
+    box-shadow: 0 0 8px rgba(0, 225, 255, 0.3);
     outline: none;
+  }
+
+  .form-error {
+    border-color: #ff6a6a !important;
+    box-shadow: 0 0 10px rgba(255, 80, 80, 0.5) !important;
   }
 
   button {
@@ -83,11 +95,20 @@
     font-weight: 700;
     transition: 0.3s;
     box-shadow: 0 0 16px rgba(0, 150, 255, 0.2);
+    font-size: 1rem; /* MỚI: Thêm để nút to hơn */
   }
 
   button:hover {
     box-shadow: 0 0 25px rgba(0, 200, 255, 0.5);
     transform: scale(1.04);
+  }
+
+  button:disabled {
+    background: #555;
+    opacity: 0.7;
+    cursor: wait;
+    transform: scale(1);
+    box-shadow: none;
   }
 
   .row { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -138,6 +159,11 @@
     to {opacity: 1; transform: translateY(0);}
   }
 
+  @keyframes cardFadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
   /* === LUCY AI ASSISTANT === */
   .lucy {
     position: fixed;
@@ -153,6 +179,7 @@
     backdrop-filter: blur(10px);
     width: 230px;
     animation: fadeIn 1.2s ease;
+    z-index: 100;
   }
   .lucy:before {
     content: "🤖 Lucy:";
@@ -160,123 +187,271 @@
     font-weight: 700;
     color: #64f9ff;
     margin-bottom: 6px;
+    display: flex;
+    align-items: center;
   }
+  
+  .lucy:before::after {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #00ffaa;
+    margin-left: 8px;
+    box-shadow: 0 0 6px #00ffaa;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+
+  /* === BIỂU ĐỒ DANH MỤC === */
+  .portfolio-bar-chart {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .bar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bar-label {
+    flex-basis: 110px;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+  }
+  .bar-label span {
+    font-weight: 600;
+    color: #e0f0ff;
+  }
+  .bar-label small {
+    display: block;
+    color: #8ca1c1;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  .bar-track {
+    flex-grow: 1;
+    height: 10px;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 1s ease-out;
+    animation: growBar 1s ease-out;
+  }
+  .bar-value {
+    flex-basis: 40px;
+    flex-shrink: 0;
+    text-align: right;
+    font-weight: 700;
+    color: #e0f0ff;
+  }
+  .bar-r1 { background: #0088fe; }
+  .bar-r2 { background: #00c0f9; }
+  .bar-r3 { background: #00e0b8; }
+  .bar-r4 { background: #a0ff64; }
+  .bar-r5 { background: #f9d423; }
+
+  @keyframes growBar {
+    from { width: 0% !important; }
+    to { /* width được set bằng inline style */ }
+  }
+  
+  /* === MỚI: MÀN HÌNH CHÀO MỪNG === */
+  .welcome-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Sử dụng cùng 1 nền với body */
+    background: radial-gradient(circle at top, #0a0f1c, #020409 80%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 0.5s ease-out;
+  }
+  
+  .welcome-box {
+    /* Copy style từ .card */
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    background-color: rgba(14, 25, 46, 0.65);
+    border: 1px solid rgba(60, 120, 180, 0.25);
+    box-shadow: 0 0 24px rgba(0, 195, 255, 0.1);
+    border-radius: 14px;
+    padding: 30px 40px;
+    
+    text-align: center;
+    max-width: 400px;
+    animation: fadeIn 0.8s ease-out;
+  }
+  
+  .welcome-box h2 {
+    font-size: 1.6rem;
+    color: #64f9ff;
+    text-shadow: 0 0 12px #00e1ff;
+    margin-top: 0;
+  }
+  
+  .welcome-box p {
+    color: #b4c9ff;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+  }
+  
+  .welcome-box button {
+    padding: 12px 25px; /* Làm nút to hơn */
+  }
+  
 </style>
 </head>
 <body>
 
-  <h1>Lucy Robo-advisor (Nhóm 3)</h1>
-  <p class="lead">Điền nhanh 6 câu hỏi để hệ thống phân loại hồ sơ C1–C5 và gợi ý danh mục R1–R5.</p>
-
-  <div class="card">
-    <form id="profiler">
-      <div class="row">
-        <div class="col">
-          <label for="age">1) Tuổi của bạn</label>
-          <select id="age">
-            <option value="">Chọn...</option>
-            <option value="0">Dưới 25</option>
-            <option value="1">25–34</option>
-            <option value="2">35–44</option>
-            <option value="3">45–54</option>
-            <option value="2">55+</option>
-          </select>
-        </div>
-        <div class="col">
-          <label for="income">2) Thu nhập hàng năm (VNĐ)</label>
-          <select id="income">
-            <option value="">Chọn...</option>
-            <option value="0">&lt; 100 triệu</option>
-            <option value="1">100–300 triệu</option>
-            <option value="2">300–800 triệu</option>
-            <option value="3">&gt; 800 triệu</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:12px;">
-        <div class="col">
-          <label for="experience">3) Kinh nghiệm đầu tư</label>
-          <select id="experience">
-            <option value="">Chọn...</option>
-            <option value="0">Chưa từng đầu tư</option>
-            <option value="1">&lt; 2 năm</option>
-            <option value="2">2–5 năm</option>
-            <option value="3">&gt; 5 năm</option>
-          </select>
-        </div>
-        <div class="col">
-          <label for="scenario">4) Nếu thị trường giảm 20%, bạn sẽ:</label>
-          <select id="scenario">
-            <option value="">Chọn...</option>
-            <option value="0">Bán toàn bộ</option>
-            <option value="1">Bán một phần</option>
-            <option value="2">Giữ nguyên</option>
-            <option value="3">Mua thêm</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:12px;">
-        <div class="col">
-          <label for="goal">5) Mục tiêu đầu tư chính</label>
-          <select id="goal">
-            <option value="">Chọn...</option>
-            <option value="0">Bảo toàn vốn</option>
-            <option value="1">Thu nhập ổn định</option>
-            <option value="2">Tăng trưởng vừa</option>
-            <option value="3">Tăng trưởng cao</option>
-          </select>
-        </div>
-        <div class="col">
-          <label for="horizon">6) Thời gian đầu tư dự kiến</label>
-          <select id="horizon">
-            <option value="">Chọn...</option>
-            <option value="0">&lt; 1 năm</option>
-            <option value="1">1–3 năm</option>
-            <option value="2">3–5 năm</option>
-            <option value="3">&gt; 5 năm</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="margin-top:16px; text-align:center;">
-        <button type="button" onclick="compute()">Đánh giá &amp; Gợi ý</button>
-      </div>
-    </form>
-
-    <div id="out" class="result" style="display:none;"></div>
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <div class="welcome-box">
+      <h2>Chào mừng bạn!</h2>
+      <p>Gặp gỡ Lucy, trợ lý đầu tư AI của bạn. Hãy bắt đầu bằng việc tìm hiểu hồ sơ rủi ro của bạn nhé.</p>
+      <button type"button" onclick="startSurvey()">Bắt đầu khảo sát</button>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>Matrix C (Khách hàng) → R (Sản phẩm)</h3>
-    <p class="muted">C1 tiếp cận R1–R2, C5 có thể tiếp cận R1–R5.</p>
-    <table>
-      <thead><tr><th>C / R</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th></tr></thead>
-      <tbody>
-        <tr><th>C1</th><td>✓</td><td>✓</td><td>✕</td><td>✕</td><td>✕</td></tr>
-        <tr><th>C2</th><td>✓</td><td>✓</td><td>✓</td><td>✕</td><td>✕</td></tr>
-        <tr><th>C3</th><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✕</td></tr>
-        <tr><th>C4</th><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓ (small)</td></tr>
-        <tr><th>C5</th><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-      </tbody>
-    </table>
-	<img src="https://i.postimg.cc/hjgmYPfp/Matrix.jpg" 
-	 alt="Matrix illustration"
-	 style="display:block;margin:20px auto;max-width:100%;border-radius:10px;">
-  </div>
+  <div id="mainContent" style="display: none;">
 
-  <footer>Mock minh họa robo-advisor (Lucy-style). Không phải tư vấn đầu tư thực tế.</footer>
+    <h1>Lucy Robo-advisor (Nhóm 3)</h1>
+    <p class="lead">Điền nhanh 6 câu hỏi để hệ thống phân loại hồ sơ C1–C5 và gợi ý danh mục R1–R5.</p>
 
-  <div class="lucy" id="lucyBox">Hello! I'm Lucy 👋</div>
+    <div class="card">
+      <form id="profiler">
+        <div class="row">
+          <div class="col">
+            <label for="age">1) Tuổi của bạn</label>
+            <select id="age">
+              <option value="">Chọn...</option>
+              <option value="0">Dưới 25</option>
+              <option value="1">25–34</option>
+              <option value="2">35–44</option>
+              <option value="3">45–54</option>
+              <option value="2">55+</option>
+            </select>
+          </div>
+          <div class="col">
+            <label for="income">2) Thu nhập hàng năm (VNĐ)</label>
+            <select id="income">
+              <option value="">Chọn...</option>
+              <option value="0">&lt; 100 triệu</option>
+              <option value="1">100–300 triệu</option>
+              <option value="2">300–800 triệu</option>
+              <option value="3">&gt; 800 triệu</option>
+            </select>
+          </div>
+        </div>
 
-  <script>
-    // Lucy speaking function
+        <div class="row" style="margin-top:12px;">
+          <div class="col">
+            <label for="experience">3) Kinh nghiệm đầu tư</label>
+            <select id="experience">
+              <option value="">Chọn...</option>
+              <option value="0">Chưa từng đầu tư</option>
+              <option value="1">&lt; 2 năm</option>
+              <option value="2">2–5 năm</option>
+              <option value="3">&gt; 5 năm</option>
+            </select>
+          </div>
+          <div class="col">
+            <label for="scenario">4) Nếu thị trường giảm 20%, bạn sẽ:</label>
+            <select id="scenario">
+              <option value="">Chọn...</option>
+              <option value="0">Bán toàn bộ</option>
+              <option value="1">Bán một phần</option>
+              <option value="2">Giữ nguyên</option>
+              <option value="3">Mua thêm</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
+          <div class="col">
+            <label for="goal">5) Mục tiêu đầu tư chính</label>
+            <select id="goal">
+              <option value="">Chọn...</option>
+              <option value="0">Bảo toàn vốn</option>
+              <option value="1">Thu nhập ổn định</option>
+              <option value="2">Tăng trưởng vừa</option>
+              <option value="3">Tăng trưởng cao</option>
+            </select>
+          </div>
+          <div class="col">
+            <label for="horizon">6) Thời gian đầu tư dự kiến</label>
+            <select id="horizon">
+              <option value="">Chọn...</option>
+              <option value="0">&lt; 1 năm</option>
+              <option value="1">1–3 năm</option>
+              <option value="2">3–5 năm</option>
+              <option value="3">&gt; 5 năm</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:16px; text-align:center;">
+          <button type="button" id="computeBtn" onclick="compute()">Đánh giá &amp; Gợi ý</button>
+        </div>
+      </form>
+
+      <div id="out" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="card">
+      <h3>Matrix C (Khách hàng) → R (Sản phẩm)</h3>
+      <p class="muted">C1 tiếp cận R1–R2, C5 có thể tiếp cận R1–R5.</p>
+      <table>
+        <thead><tr><th>C / R</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th></tr></thead>
+        <tbody>
+          <tr><th>C1</th><td>✓</td><td>✓</td><td>✕</td><td>✕</td><td>✕</td></tr>
+          <tr><th>C2</th><td>✓</td><td>✓</td><td>✓</td><td>✕</td><td>✕</td></tr>
+          <tr><th>C3</th><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✕</td></tr>
+          <tr><th>C4</th><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓ (small)</td></tr>
+          <tr><th>C5</th><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        </tbody>
+      </table>
+      <img src="https://i.postimg.cc/hjgmYPfp/Matrix.jpg" 
+       alt="Matrix illustration"
+       style="display:block;margin:20px auto;max-width:100%;border-radius:10px;">
+    </div>
+
+    <footer>Mock minh họa robo-advisor (Lucy-style). Không phải tư vấn đầu tư thực tế.</footer>
+
+    <div class="lucy" id="lucyBox">Hello! I'm Lucy 👋</div>
+
+  </div> <script>
+    // Lucy speaking function (Giữ nguyên bản đã sửa lỗi)
     function speak(msg) {
       const lucy = document.getElementById("lucyBox");
-      lucy.innerText = msg;
-      lucy.style.animation = "fadeIn 0.6s";
+      lucy.innerHTML = '';
+      let i = 0;
+      function typeWriter() {
+        if (i < msg.length) {
+          lucy.innerHTML += msg.charAt(i);
+          i++;
+          setTimeout(typeWriter, 25);
+        }
+      }
+      typeWriter();
 
+      speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(msg);
       utterance.lang = 'en-US';
       utterance.pitch = 1.05;
@@ -284,11 +459,14 @@
       utterance.volume = 1;
 
       function setVoiceAndSpeak() {
+        speechSynthesis.onvoiceschanged = null; // Chống lặp
+        
         const voices = speechSynthesis.getVoices();
         const lucyVoice =
           voices.find(v => v.name.toLowerCase().includes('lucy') && v.lang.includes('en')) ||
+          voices.find(v => v.name.toLowerCase().includes('google') && v.lang.includes('en-US') && v.name.toLowerCase().includes('female')) ||
           voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
-          voices.find(v => v.lang.startsWith('en')) ||
+          voices.find(v => v.lang.startsWith('en-US')) ||
           voices[0];
         if (lucyVoice) utterance.voice = lucyVoice;
         speechSynthesis.speak(utterance);
@@ -301,61 +479,123 @@
       }
     }
 
-    // Compute function (modified)
-    function compute(){
-      const ids = ["age","income","experience","scenario","goal","horizon"];
-      let vals = [];
-      for (const id of ids) {
-        const val = document.getElementById(id).value;
-        if(val === "") { alert("Vui lòng hoàn tất tất cả câu hỏi."); return; }
-        vals.push(parseInt(val));
-      }
+    // === PHẦN JS NÂNG CẤP ===
 
-      const score = vals.reduce((a,b)=>a+b,0);
-      let cClass = '';
-      if(score <= 4) cClass = 'C1 (Conservative)';
-      else if(score <= 7) cClass = 'C2 (Steady)';
-      else if(score <= 10) cClass = 'C3 (Balanced)';
-      else if(score <= 14) cClass = 'C4 (Growth)';
-      else cClass = 'C5 (Aggressive)';
+    // MỚI: Hàm kích hoạt khi nhấn nút "Bắt đầu khảo sát"
+    function startSurvey() {
+      const overlay = document.getElementById('welcomeOverlay');
+      const main = document.getElementById('mainContent');
 
-      const mapping = {
-        'C1 (Conservative)': { allowed: ['R1','R2'], portfolio: {'R1':60,'R2':30,'R3':10} },
-        'C2 (Steady)': { allowed: ['R1','R2','R3'], portfolio: {'R1':40,'R2':35,'R3':25} },
-        'C3 (Balanced)': { allowed: ['R1','R2','R3','R4'], portfolio: {'R1':20,'R2':30,'R3':35,'R4':15} },
-        'C4 (Growth)': { allowed: ['R1','R2','R3','R4','(small)R5'], portfolio: {'R1':10,'R2':20,'R3':40,'R4':20,'R5':10} },
-        'C5 (Aggressive)': { allowed: ['R1','R2','R3','R4','R5'], portfolio: {'R1':5,'R2':10,'R3':35,'R4':30,'R5':20} }
-      };
-      const result = mapping[cClass];
-      const desc = {
-        R1:"Tiền gửi / Gốc bảo toàn",
-        R2:"Trái phiếu / Thu nhập ổn định",
-        R3:"Cổ phiếu blue-chip",
-        R4:"Cổ phiếu tăng trưởng / ETF ngành",
-        R5:"Sản phẩm rủi ro cao"
-      };
-
-      const out = document.getElementById('out');
-      out.style.display = 'block';
-      out.innerHTML = `
-        <h3>Kết quả: <span class="badge">${cClass}</span></h3>
-        <p class="muted">Điểm tổng: <strong>${score}</strong> / 18</p>
-        <p><strong>Mức sản phẩm được phép:</strong> ${result.allowed.join(', ')}</p>
-        <h4>Danh mục tham khảo:</h4>
-        <div style="line-height:1.8; margin-top:8px;">
-          ${Object.entries(result.portfolio)
-            .map(([k,v])=>`<div>${k} – ${desc[k]||''}: <strong>${v}%</strong></div>`)
-            .join('')}
-        </div>
-      `;
-
-      speak(`Your profile is ${cClass}. I suggest you focus on products like ${result.allowed.join(', ')}!`);
+      // 1. Kích hoạt lời chào (đây là tương tác đầu tiên)
+      // Trình duyệt sẽ cho phép âm thanh vì nó được gọi từ 1 cú click
+      speak("Hi there! I'm Lucy, your investment assistant. Let's explore your investor profile together!");
+      
+      // 2. Ẩn màn hình chào mừng (với hiệu ứng mờ)
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 500); // 0.5 giây (khớp với transition trong CSS)
+      
+      // 3. Hiển thị nội dung chính
+      main.style.display = 'block';
     }
 
-document.addEventListener('click', function greetOnce() {
-  speak("Hi there! I'm Lucy, your investment assistant. Let's explore your investor profile together!");
-  document.removeEventListener('click', greetOnce);
-});
+
+    // Data (Giữ nguyên)
+    const mapping = {
+      'C1 (Conservative)': { allowed: ['R1','R2'], portfolio: {'R1':60,'R2':30,'R3':10} },
+      'C2 (Steady)': { allowed: ['R1','R2','R3'], portfolio: {'R1':40,'R2':35,'R3':25} },
+      'C3 (Balanced)': { allowed: ['R1','R2','R3','R4'], portfolio: {'R1':20,'R2':30,'R3':35,'R4':15} },
+      'C4 (Growth)': { allowed: ['R1','R2','R3','R4','(small)R5'], portfolio: {'R1':10,'R2':20,'R3':40,'R4':20,'R5':10} },
+      'C5 (Aggressive)': { allowed: ['R1','R2','R3','R4','R5'], portfolio: {'R1':5,'R2':10,'R3':35,'R4':30,'R5':20} }
+    };
+    const desc = {
+      R1:"Tiền gửi / Gốc bảo toàn",
+      R2:"Trái phiếu / Thu nhập ổn định",
+      R3:"Cổ phiếu blue-chip",
+      R4:"Cổ phiếu tăng trưởng / ETF ngành",
+      R5:"Sản phẩm rủi ro cao"
+    };
+
+    // Compute function (Giữ nguyên)
+    function compute(){
+      const ids = ["age","income","experience","scenario","goal","horizon"];
+      const btn = document.getElementById('computeBtn');
+      const out = document.getElementById('out');
+      out.style.display = 'none';
+      
+      document.querySelectorAll('.form-error').forEach(el => el.classList.remove('form-error'));
+      
+      let vals = [];
+      let hasError = false;
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        const val = el.value;
+        if(val === "") {
+          el.classList.add('form-error');
+          hasError = true;
+        }
+        vals.push(parseInt(val) || 0);
+      }
+
+      if (hasError) {
+        speak("Oops! Please complete all the questions first.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Đang phân tích...';
+      speak("Analyzing your profile. One moment...");
+
+      // Dùng setTimeout để mô phỏng độ trễ (4 giây)
+      setTimeout(() => {
+        const score = vals.reduce((a,b)=>a+b,0);
+        let cClass = '';
+        if(score <= 4) cClass = 'C1 (Conservative)';
+        else if(score <= 7) cClass = 'C2 (Steady)';
+        else if(score <= 10) cClass = 'C3 (Balanced)';
+        else if(score <= 14) cClass = 'C4 (Growth)';
+        else cClass = 'C5 (Aggressive)';
+
+        const result = mapping[cClass];
+
+        const chartHtml = Object.entries(result.portfolio)
+          .map(([k,v]) => `
+            <div class="bar-item">
+              <div class="bar-label">
+                <span>${k}</span>
+                <small>${desc[k] || ''}</small>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill bar-${k.toLowerCase()}" style="width: ${v}%;" title="${v}%"></div>
+              </div>
+              <div class="bar-value">${v}%</div>
+            </div>
+          `).join('');
+
+        out.style.display = 'block';
+        out.innerHTML = `
+          <h3>Kết quả: <span class="badge">${cClass}</span></h3>
+          <p class="muted">Điểm tổng: <strong>${score}</strong> / 18</p>
+          <p><strong>Mức sản phẩm được phép:</strong> ${result.allowed.join(', ')}</p>
+          <h4>Danh mục tham khảo:</h4>
+          <div class="portfolio-bar-chart">
+            ${chartHtml}
+          </div>
+        `;
+
+        speak(`Your profile is ${cClass}. I suggest you focus on products like ${result.allowed.join(', ')}!`);
+        btn.disabled = false;
+        btn.innerText = 'Đánh giá & Gợi ý';
+
+        out.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      }, 4000); // <-- Thời gian 4 giây
+    }
+
+    // KHÔNG CẦN listener 'click' cũ nữa, vì startSurvey() đã thay thế
+    // document.addEventListener('click', function greetOnce() { ... });
+
   </script>
 </body>
 </html>
